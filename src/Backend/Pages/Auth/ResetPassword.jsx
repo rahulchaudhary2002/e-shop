@@ -1,23 +1,16 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 
-export default function Register(props) {
+export default function ResetPassword(props) {
     const navigate = useNavigate();
-    const [state, setState] = useState({ name: '', email: '', password: '', confirm_password: '' });
-    const [error, setError] = useState({ name: '', email: '', password: '', confirm_password: '' });
+    const [state, setState] = useState({ email: '', password: '', confirm_password: '' });
+    const [error, setError] = useState({ email: '', password: '', confirm_password: '' });
     const host = import.meta.env.VITE_REACT_APP_API_HOST;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (state.name === '' || state.email === '' || state.password === '' || state.confirm_password === '') {
+        if (state.name === '' || state.email === '' || state.password === '') {
             let newErrors = { ...error };
-
-            if (state.name === '') {
-                newErrors = { ...newErrors, name: "Name is required." };
-            }
-            else {
-                newErrors = { ...newErrors, name: "" };
-            }
 
             if (state.email === '') {
                 newErrors = { ...newErrors, email: "Email is required." };
@@ -45,12 +38,12 @@ export default function Register(props) {
             setError(newErrors);
         }
         else {
-            const response = await fetch(`${host}/api/auth/register`, {
+            const response = await fetch(`${host}/api/auth/reset-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ name: state.name, email: state.email, password: state.password, confirm_password: state.confirm_password })
+                body: JSON.stringify({ email: state.email, password: state.password, confirm_password: state.confirm_password })
             });
 
             const json = await response.json();
@@ -77,18 +70,11 @@ export default function Register(props) {
                 <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
                     <div className="card">
                         <div className="card-header bg-primary">
-                            <h4 className="card-title text-white text-center mt-2">Register</h4>
+                            <h4 className="card-title text-white text-center mt-2">Reset Password</h4>
                         </div>
                         <div className="card-body">
                             <form action="/" onSubmit={handleSubmit}>
                                 <div className="row g-2">
-                                    <div className="col-md-12">
-                                        <div className="form-group">
-                                            <label htmlFor="name">Name</label>
-                                            <input className="form-control" type="text" name="name" onChange={handleChange} value={state.name} />
-                                            <span className="text-danger">{error.name}</span>
-                                        </div>
-                                    </div>
                                     <div className="col-md-12">
                                         <div className="form-group">
                                             <label htmlFor="email">Email</label>
@@ -111,7 +97,7 @@ export default function Register(props) {
                                         </div>
                                     </div>
                                     <div className="col-md-12">
-                                        <button className="w-100 btn btn-primary">Register</button>
+                                        <button className="w-100 btn btn-primary">Reset Password</button>
                                     </div>
                                     <span className="text-center">Already have an account? <Link className="text-center text-decoration-none" to={'/administrator/login'}>Login</Link></span>
                                 </div>

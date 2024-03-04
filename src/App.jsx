@@ -5,6 +5,8 @@ import Category from './Backend/Pages/Category/Category'
 import CreateCategory from './Backend/Pages/Category/CreateCategory'
 import Login from './Backend/Pages/Auth/Login'
 import Register from './Backend/Pages/Auth/Register'
+import ForgotPassword from './Backend/Pages/Auth/ForgotPassword'
+import ResetPassword from './Backend/Pages/Auth/ResetPassword'
 
 function App() {
     return (
@@ -13,6 +15,8 @@ function App() {
                 <Routes>
                     <Route path="/administrator/login" element={<Login />} exact />
                     <Route path="/administrator/register" element={<Register />} exact />
+                    <Route path="/administrator/forgot-password" element={<ForgotPassword />} exact />
+                    <Route path="/administrator/reset-password" element={<ResetPassword />} exact />
                     <Route path="/administrator" element={<BackendLayout />}>
                         <Route path="/administrator" element={<Dashboard />} exact />
                         <Route path="/administrator/category" element={<Category />} exact />
