@@ -1,3 +1,21 @@
+:root {
+    --main-color : #2596be;
+	--hover-main-color : #09708d;
+	--black-color : #1c1c1c;
+	--gray-color : #f5f5f5;
+	--white-color : #FFF;
+}
+
 body {
     background-color: #E7E9EB;
+}
+
+ul {
+	list-style: none;
+}
+
+a {
+	text-decoration: none;
+	color: var(--black-color);
+	transition: 0.3s;
 }

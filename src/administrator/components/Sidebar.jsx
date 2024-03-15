@@ -12,7 +12,7 @@ const Sidebar = () => {
             <hr />
             <ul className="nav nav-pills flex-column mb-auto">
                 <li>
-                    <Link to="/administrator" className={`nav-link text-white d-flex align-items-center gap-3 ${location.pathname==="/administrator" ? "active" : ""}`}>
+                    <Link to="/administrator" className={`nav-link text-white d-flex align-items-center gap-3 ${location.pathname==="/administrator" || location.pathname==="/administrator/" ? "active" : ""}`}>
                         <i className="fa fa-dashboard"></i> Dashboard
                     </Link>
                 </li>
