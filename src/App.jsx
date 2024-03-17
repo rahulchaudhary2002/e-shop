@@ -11,6 +11,7 @@ import Home from './website/pages/Home';
 import Verify from './administrator/pages/auth/Verify';
 import { ToastContainer } from 'react-toastify';
 import ResetPassword from './administrator/pages/auth/ResetPassword';
+import ChangePassword from './administrator/pages/auth/ChangePassword';
 
 function App() {
     return (
@@ -28,6 +29,7 @@ function App() {
                     <Route path="forget-password" element={<ForgetPassword />} />
                     <Route path="reset-password/:token" element={<ResetPassword />} />
                     <Route path="" element={<AdministratorLayout />} >
+                        <Route path="change-password" element={<ChangePassword />} />
                         <Route path="" element={<Dashboard />} />
                         <Route path='category/*'>
                             <Route path="" element={<Category />} />

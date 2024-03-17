@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 import { API_URL } from '../constants'
-import { forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from '../common/validations/AuthValidation';
+import { changePasswordSchema, forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema } from '../common/validations/AuthValidation';
 import jsCookie from 'js-cookie';
 
 const register = async (state, setError) => {
@@ -170,6 +170,33 @@ const resetPassword = async (state, setError, token) => {
     }
 }
 
+const changePassword = async (state, setError) => {
+    try {
+        await changePasswordSchema.validate(state, { abortEarly: false });
+
+        const response = await fetch(`${API_URL}/api/change-password`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jsCookie.get('accessToken')}`
+            },
+            body: JSON.stringify({ old_password: state.old_password, new_password: state.new_password, confirm_password: state.confirm_password })
+        });
+    
+        return await response.json();
+
+    } catch (error) {
+        if (error instanceof yup.ValidationError) {
+            const newErrors = {};
+            error.inner.forEach(err => {
+                newErrors[err.path] = err.message;
+            });
+            setError(newErrors);
+        }
+        return error
+    }
+}
+
 export {
     register,
     verify,
@@ -178,5 +205,6 @@ export {
     refreshToken,
     forgotPassword,
     checkRestPasswordToken,
-    resetPassword
+    resetPassword,
+    changePassword
 }

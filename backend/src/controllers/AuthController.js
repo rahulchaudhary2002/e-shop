@@ -211,16 +211,16 @@ const refreshAccessToken = async (req, res) => {
 }
 
 const changeCurrentPassword = async (req, res) => {
-    const { oldPassword, newPassword } = req.body
+    const { old_password, new_password } = req.body
 
     const user = await User.findById(req.user?._id)
-    const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
+    const isPasswordCorrect = await user.isPasswordCorrect(old_password)
 
     if (!isPasswordCorrect) {
-        return res.status(400).json({ status: 400, error: "Invalid old password" })
+        return res.status(400).json({ status: 400, error: "Password does not match with our records" })
     }
 
-    user.password = newPassword
+    user.password = new_password
     await user.save({ validateBeforeSave: false })
 
     return res.status(200).json({ status: 200, message: "Password changed successfully" })
@@ -275,7 +275,8 @@ const resetPassword = async (req, res) => {
 
     const user = await User.findById(token.user)
     user.password = password
-    await user.save()
+    await user.save({ validateBeforeSave: false })
+    await Token.deleteOne({ token: req.params.token, type: 'reset-password' })
 
     return res.status(200).json({ status: 200, message: "You have successfully reset your password." })
 }

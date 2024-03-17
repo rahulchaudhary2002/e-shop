@@ -8,9 +8,9 @@ const Header = () => {
 
     const handleLogout = async (e) => {
         e.preventDefault();
-        
+
         const res = await logout()
-        
+
         if (res.status === 200) {
             jsCookie.remove('accessToken')
             jsCookie.remove('refreshToken')
@@ -35,6 +35,7 @@ const Header = () => {
                                     <img src="https://icon-library.com/images/no-photo-available-icon/no-photo-available-icon-20.jpg" alt="" height={30} style={{ "borderRadius": "20px" }} /> <span className="ml-3">Administrator</span>
                                 </Link>
                                 <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
+                                    <li><Link className="dropdown-item" to="/administrator/change-password">Change Password</Link></li>
                                     <li><Link className="dropdown-item" to="/administrator/logout" onClick={handleLogout}>Logout</Link></li>
                                 </ul>
                             </li>
