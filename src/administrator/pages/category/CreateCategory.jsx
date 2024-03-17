@@ -2,13 +2,38 @@ import React, { useEffect, useState } from 'react'
 import Loading from '../../../common/components/Loading';
 import jsCookie from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { createCategory } from '../../../api/CategoryApi';
+import { toast } from 'react-toastify';
 
 const CreateCategory = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true)
+    const [state, setState] = useState({ name: '', file: '' })
+    const [errors, setErrors] = useState({ name: '', file: '' })
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setLoading(true)
+
+        const res = await createCategory(state, setErrors)
+
+        if (res.status === 200) {
+            toast.success(res.message)
+            return navigate('/administrator/category')
+        }
+        else if (res.status) {
+            toast.error(res.error)
+        }
+
+        setLoading(false)
+    }
+
+    const handleChange = (e) => {
+        setState({ ...state, [e.target.name]: e.target.value });
+    }
+
+    const handleFileChange = (e) => {
+        setState({ ...state, [e.target.name]: e.target.files[0] });
     }
 
     useEffect(() => {
@@ -33,15 +58,15 @@ const CreateCategory = () => {
                                 <div className="col-md-6">
                                     <div className="form-group">
                                         <label htmlFor="name">Name</label>
-                                        <input className='form-control' type="text" name='name' id='name' />
+                                        <input className='form-control' type="text" name='name' id='name' value={state.name} onChange={handleChange} />
+                                        <span className="text-danger">{errors.name}</span>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
                                     <div className="form-group">
-                                        <label htmlFor="category">Category</label>
-                                        <select className='form-control' name="category" id="category">
-                                            <option value="">Select Category</option>
-                                        </select>
+                                        <label htmlFor="file">Image</label>
+                                        <input className='form-control' type="file" name='file' id='file' onChange={handleFileChange} />
+                                        <span className="text-danger">{errors.file}</span>
                                     </div>
                                 </div>
                                 <div className="col-md-12">
