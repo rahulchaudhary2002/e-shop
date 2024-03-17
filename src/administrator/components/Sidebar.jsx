@@ -5,8 +5,8 @@ const Sidebar = () => {
     let location = useLocation();
 
     return (
-        <div className="d-flex flex-column flex-shrink-0 p-3 text-bg-dark" style={{ "width": "280px", "height": "100vh", "position": "fixed" }}>
-            <Link to="/administrator" className="d-flex justify-content-center align-items-center">
+        <div className="d-flex flex-column flex-shrink-0 py-3 text-bg-dark" style={{ "width": "280px", "height": "100vh", "position": "fixed" }}>
+            <Link to="/administrator" className="d-flex px-3 align-items-center">
                 <img src="/logo.png" alt="Logo" height={30} />
             </Link>
             <hr />

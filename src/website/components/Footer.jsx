@@ -11,7 +11,7 @@ const Footer = () => {
                         <div className="row g-3">
                             <div className="col-md-4 footer-top-brand">
                                 <div className="footer-logo">
-                                    <Link to="#" title="Logo"><img src="/logo.png" alt="Logo" /></Link>
+                                    <Link className='text-dark text-decoration-none' to="#" title="Logo"><img src="/logo.png" alt="Logo" /></Link>
                                 </div>
                                 <span className="mt-2">Address: Kathmandu, Nepal</span>
                                 <span className="mt-2">Phone: +977 980000000000</span>
@@ -20,11 +20,11 @@ const Footer = () => {
                             <div className="col-md-3">
                                 <strong>Quick Links</strong>
                                 <div className="footer-top-quick-links d-flex flex-column">
-                                    <Link to="./index.html" title="Home">Home</Link>
-                                    <Link to="./shop.html" title="Shop">Shop</Link>
-                                    <Link to="./blog.html" title="Blog">Blog</Link>
-                                    <Link to="./contact.html" title="Contact">Contact</Link>
-                                    <Link to="#" title="About Us">About Us</Link>
+                                    <Link className='text-dark text-decoration-none' to="./index.html" title="Home">Home</Link>
+                                    <Link className='text-dark text-decoration-none' to="./shop.html" title="Shop">Shop</Link>
+                                    <Link className='text-dark text-decoration-none' to="./blog.html" title="Blog">Blog</Link>
+                                    <Link className='text-dark text-decoration-none' to="./contact.html" title="Contact">Contact</Link>
+                                    <Link className='text-dark text-decoration-none' to="#" title="About Us">About Us</Link>
                                 </div>
                             </div>
                             <div className="col-md-5">
@@ -37,10 +37,10 @@ const Footer = () => {
                                     </form>
                                 </div>
                                 <div className="footer-top-social mt-4">
-                                    <Link to="#" title="Facebook"><i className="fa-brands fa-facebook-f"></i></Link>
-                                    <Link to="#" title="Instagram"><i className="fa-brands fa-instagram"></i></Link>
-                                    <Link to="#" title="Twitter"><i className="fa-brands fa-twitter"></i></Link>
-                                    <Link to="#" title="Youtube"><i className="fa-brands fa-youtube"></i></Link>
+                                    <Link className='text-dark text-decoration-none' to="#" title="Facebook"><i className="fa-brands fa-facebook-f"></i></Link>
+                                    <Link className='text-dark text-decoration-none' to="#" title="Instagram"><i className="fa-brands fa-instagram"></i></Link>
+                                    <Link className='text-dark text-decoration-none' to="#" title="Twitter"><i className="fa-brands fa-twitter"></i></Link>
+                                    <Link className='text-dark text-decoration-none' to="#" title="Youtube"><i className="fa-brands fa-youtube"></i></Link>
                                 </div>
                             </div>
                         </div>

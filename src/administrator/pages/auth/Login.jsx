@@ -1,98 +1,104 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { login, refreshToken } from '../../../api/AuthApi';
+import Loading from '../../../common/components/Loading';
+import { storeAccessToken, storeRefreshToken } from '../../../constants';
+import jsCookie from 'js-cookie';
+import { toast } from 'react-toastify';
 
 export default function Login(props) {
     const navigate = useNavigate();
     const [state, setState] = useState({ email: '', password: '' });
-    const [error, setError] = useState({ email: '', password: '' });
-    const host = import.meta.env.VITE_REACT_APP_API_HOST;
+    const [errors, setErrors] = useState({ email: '', password: '' });
+    const [loading, setLoading] = useState(true)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (state.email === '' || state.password === '') {
-            let newErrors = { ...error };
+        setLoading(true)
 
-            if (state.email === '') {
-                newErrors = { ...newErrors, email: "Email is required." };
-            }
-            else {
-                newErrors = { ...newErrors, email: "" };
-            }
+        const res = await login(state, setErrors)
 
-            if (state.password === '') {
-                newErrors = { ...newErrors, password: "Password is required." };
-            }
-            else {
-                newErrors = { ...newErrors, password: "" };
-            }
-
-            setError(newErrors);
+        if (res.status === 200) {
+            storeAccessToken(res.data.accessToken)
+            storeRefreshToken(res.data.refreshToken)
+            toast.success(res.message)
+            navigate('/administrator')
         }
-        else {
-            const response = await fetch(`${host}/api/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email: state.email, password: state.password })
-            });
-
-            const json = await response.json();
-
-            if (json.token) {
-                localStorage.setItem('token', json.token);
-                props.setMessage("Logged in successfully.");
-
-                setTimeout(() => {
-                    props.setMessage('');
-                }, 2000);
-                navigate('/');
-            }
+        else if (res.status) {
+            toast.error(res.error)
         }
+
+        setLoading(false)
     }
 
     const handleChange = (e) => {
         setState({ ...state, [e.target.name]: e.target.value });
     }
 
-    return (
-        <div className="d-flex align-items-center justify-content-center" style={{ 'minHeight': '100vh' }}>
-            <div className="row">
-                <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
-                    <div className="card">
-                        <div className="card-header bg-primary">
-                            <h4 className="card-title text-white text-center mt-2">Login</h4>
-                        </div>
-                        <div className="card-body">
-                            <form action="/" onSubmit={handleSubmit}>
-                                <div className="row g-2">
-                                    <div className="col-md-12">
-                                        <div className="form-group">
-                                            <label htmlFor="email">Email</label>
-                                            <input className="form-control" type="text" name="email" onChange={handleChange} value={state.email} />
-                                            <span className="text-danger">{error.email}</span>
+    useEffect(() => {
+        if (jsCookie.get('accessToken')) {
+            navigate(-1)
+        }
+        else if (!jsCookie.get('accessToken') && jsCookie.get('refreshToken')) {
+            refreshToken()
+                .then(res => {
+                    if (res.status == 200) {
+                        storeAccessToken(res.data.accessToken)
+                        toast.success(res.message)
+                        navigate('/administrator')
+                    }
+                    else if(res.status) {
+                        toast.error(res.error)
+                        setLoading(false);
+                    }
+                })
+        }
+        else {
+            setLoading(false);
+        }
+    }, [])
+
+    if (loading)
+        return <Loading />
+    else
+        return (
+            <div className="d-flex align-items-center justify-content-center" style={{ 'minHeight': '100vh' }}>
+                <div className="row">
+                    <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
+                        <div className="card">
+                            <div className="card-header bg-primary">
+                                <h4 className="card-title text-white text-center mt-2">Login</h4>
+                            </div>
+                            <div className="card-body">
+                                <form action="/" onSubmit={handleSubmit}>
+                                    <div className="row g-2">
+                                        <div className="col-md-12">
+                                            <div className="form-group">
+                                                <label htmlFor="email">Email</label>
+                                                <input className="form-control" type="text" name="email" onChange={handleChange} value={state.email} />
+                                                <span className="text-danger">{errors.email}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="col-md-12">
-                                        <div className="form-group">
-                                            <label htmlFor="password">Password</label>
-                                            <input className="form-control" type="password" name="password" onChange={handleChange} value={state.password} />
-                                            <span className="text-danger">{error.password}</span>
+                                        <div className="col-md-12">
+                                            <div className="form-group">
+                                                <label htmlFor="password">Password</label>
+                                                <input className="form-control" type="password" name="password" onChange={handleChange} value={state.password} />
+                                                <span className="text-danger">{errors.password}</span>
+                                            </div>
                                         </div>
+                                        <div className="col-md-12">
+                                            <Link className='float-end text-decoration-none' to={'/administrator/forget-password'}>Forgot your password?</Link>
+                                        </div>
+                                        <div className="col-md-12">
+                                            <button className="w-100 btn btn-md btn-primary">Login</button>
+                                        </div>
+                                        <span className="text-center">Don't have an account yet? <Link className="text-center text-decoration-none" to={'/administrator/register'}>Register now</Link></span>
                                     </div>
-                                    <div className="col-md-12">
-                                        <Link className='float-end text-decoration-none' to={'/administrator/forgot-password'}>Forgot your password?</Link>
-                                    </div>
-                                    <div className="col-md-12">
-                                        <button className="w-100 btn btn-md btn-primary">Login</button>
-                                    </div>
-                                    <span className="text-center">Don't have an account yet? <Link className="text-center text-decoration-none" to={'/administrator/register'}>Register now</Link></span>
-                                </div>
-                            </form>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    )
+        )
 }

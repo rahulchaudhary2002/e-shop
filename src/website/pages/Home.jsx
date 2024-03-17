@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 const Home = () => {
     return (
         <>
-            <h2 className="text-center text-muted">Categories</h2>
+            <h2 className="text-center text-primary">Categories</h2>
             <div className="row">
                 <div className="col-md-2 col-sm-6">
                     <div className="card mb-2">
@@ -55,7 +55,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <h2 className="text-center text-muted mt-3">Just For You</h2>
+            <h2 className="text-center text-primary mt-3">Just For You</h2>
             <div className="row">
                 <div className="col-md-3 col-sm-6">
                     <div className="card mb-3">

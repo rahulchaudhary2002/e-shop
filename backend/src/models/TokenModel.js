@@ -6,6 +6,10 @@ const TokenSchema = new Schema({
         type: String,
         required: true
     },
+    type: {
+        type: String,
+        required: true
+    },
     user: {
         type: ObjectId,
         ref: "User"

@@ -2,7 +2,7 @@ import hbs from 'nodemailer-express-handlebars'
 import { createTransport } from "nodemailer";
 import path from 'path'
 
-const sendMail = async (data) => {
+const sendMail = async (mailOptions) => {
     var transporter = createTransport({
         service: "gmail",
         auth: {
@@ -21,18 +21,6 @@ const sendMail = async (data) => {
     };
 
     transporter.use('compile', hbs(handlebarOptions))
-
-    var mailOptions = {
-        from: process.env.NODEMAILER_EMAIL,
-        to: data.user.email,
-        subject: data.subject,
-        template: data.template,
-        context: {
-            app_name: process.env.APP_NAME,
-            app_url: process.env.APP_URL,
-            data
-        },
-    };
 
     transporter.sendMail(mailOptions, function (error, info) {
         if (error) {

@@ -9,13 +9,3 @@
 body {
     background-color: #E7E9EB;
 }
-
-ul {
-	list-style: none;
-}
-
-a {
-	text-decoration: none;
-	color: var(--black-color);
-	transition: 0.3s;
-}

@@ -1,9 +1,10 @@
 import User from "../models/UserModel.js"
 import Token from "../models/TokenModel.js"
 import jwt from "jsonwebtoken"
-import sendMail from "../utils/SendMail.js"
 import crypto from "crypto"
 import calculateExpirationTime from "../utils/CalculateExpirationTime.js"
+import verificationMail from "../mails/verificationMail.js"
+import resetPasswordMail from "../mails/resetPasswordMail.js"
 
 const generateAccessAndRefereshTokens = async (userId) => {
     try {
@@ -42,35 +43,25 @@ const register = async (req, res) => {
     )
 
     if (!createdUser) {
-        return res.status(500).json({ status: 500, error: "Something went wrong while registering the user" })
+        return res.status(500).json({ status: 500, error: "Something went wrong while registering" })
     }
 
     const expirationTime = calculateExpirationTime(process.env.VERIFICATION_TOKEN_EXPIRY);
 
     let token = await Token.create({
         user: user._id,
-        token: crypto.randomBytes(16).toString('hex'),
+        type: 'verify',
+        token: crypto.randomBytes(32).toString('hex'),
         expirationTime
     })
 
-    const url = `localhost:5000/api/verify/${token.token}`
+    verificationMail(user, token)
 
-    const data = {
-        subject: "Email Verification",
-        title: "Verify Email Address",
-        body: "Click the button below to verify your email address.",
-        template: "verify",
-        user: createdUser,
-        url
-    }
-
-    sendMail(data)
-
-    return res.status(200).json({ status: 200, data: createdUser, message: "User registered Successfully" })
+    return res.status(200).json({ status: 200, data: { user: createdUser }, message: "You have registered successfully. Please verify your email before continuing." })
 }
 
 const verify = async (req, res) => {
-    let token = await Token.findOne({ token: req.params.token });
+    let token = await Token.findOne({ token: req.params.token, type: 'verify' });
 
     if (!token) {
         return res.status(400).json({ status: 400, error: "Invalid token or token may have expired." })
@@ -79,17 +70,19 @@ const verify = async (req, res) => {
     let user = await User.findById(token.user)
 
     if (user.isVerified) {
-        return res.status(400).json({ status: 400, error: "User already verified. Login to continue" })
+        return res.status(400).json({ status: 400, error: "You are already verified. Login to continue" })
     }
 
     user.isVerified = true
     user = await user.save()
 
     if (!user) {
-        return res.status(400).json({ status: 400, error: "Failed to verify. Try again later." })
+        return res.status(400).json({ status: 400, error: "Failed to verify email address. Try again later." })
     }
 
-    return res.status(200).json({ status: 200, message: "User verified successfully" });
+    await Token.deleteOne({ token: req.params.token, type: 'verify' })
+
+    return res.status(200).json({ status: 200, message: "You have verified your email successfully" });
 }
 
 const login = async (req, res) => {
@@ -98,40 +91,50 @@ const login = async (req, res) => {
     const user = await User.findOne({ email })
 
     if (!user) {
-        return res.status(404).json({ status: 404, error: "User does not exist" })
+        return res.status(401).json({ status: 401, error: "Credential does not match our record" })
     }
 
     const isPasswordValid = await user.isPasswordCorrect(password)
 
     if (!user.isActive) {
-        return res.status(401).json({ status: 401, error: "User is not activated" })
+        return res.status(401).json({ status: 401, error: "You are not activated. Try again after a couple of hours" })
     }
 
     if (!user.isVerified) {
-        return res.status(401).json({ status: 401, error: "User is not verifed" })
+        return res.status(401).json({ status: 401, error: "You have not verifed your email address" })
     }
 
     if (!isPasswordValid) {
-        return res.status(401).json({ status: 401, error: "Invalid user credentials" })
+        return res.status(401).json({ status: 401, error: "Credential does not match our record" })
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user._id)
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-    const options = {
+    const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY || '1d';
+    const refreshTokenExpiry = process.env.REFRESH_TOKEN_EXPIRY || '7d';
+
+    const accessOptions = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        expires: calculateExpirationTime(accessTokenExpiry)
+    }
+
+    const refreshOptions = {
+        httpOnly: true,
+        secure: true,
+        expires: calculateExpirationTime(refreshTokenExpiry)
     }
 
     return res
         .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", refreshToken, options)
+        .cookie("accessToken", accessToken, accessOptions)
+        .cookie("refreshToken", refreshToken, refreshOptions)
         .json({
             status: 200,
             data: { loggedInUser, accessToken, refreshToken },
-            message: "User logged In Successfully"
+            message: "You have logged In Successfully"
         })
 }
 
@@ -150,14 +153,15 @@ const logout = async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        expires: new Date(0)
     }
 
     return res
         .status(200)
         .clearCookie("accessToken", options)
         .clearCookie("refreshToken", options)
-        .json({ status: 200, message: "User logged Out" })
+        .json({ status: 200, message: "You are logged Out" })
 }
 
 const refreshAccessToken = async (req, res) => {
@@ -183,20 +187,22 @@ const refreshAccessToken = async (req, res) => {
             return res.status(401).json({ status: 401, error: "Refresh token is expired" })
         }
 
-        const options = {
+        const accessTokenExpiry = process.env.ACCESS_TOKEN_EXPIRY || '1d';
+
+        const accessOptions = {
             httpOnly: true,
-            secure: true
+            secure: true,
+            expires: calculateExpirationTime(accessTokenExpiry)
         }
 
-        const { accessToken, newRefreshToken } = await generateAccessAndRefereshTokens(user._id)
+        const accessToken = user.generateAccessToken()
 
         return res
             .status(200)
-            .cookie("accessToken", accessToken, options)
-            .cookie("refreshToken", newRefreshToken, options)
+            .cookie("accessToken", accessToken, accessOptions)
             .json({
                 status: 200,
-                data: { accessToken, refreshToken: newRefreshToken },
+                data: { accessToken },
                 message: "Access token refreshed"
             })
     } catch (error) {
@@ -220,8 +226,58 @@ const changeCurrentPassword = async (req, res) => {
     return res.status(200).json({ status: 200, message: "Password changed successfully" })
 }
 
-const getCurrentUser = async (req, res) => {
-    return res.status(200).json({ status: 200, data: req.user, message: "User fetched successfully" })
+const forgetPassword = async (req, res) => {
+    const { email } = req.body
+
+    const user = await User.findOne({ email })
+
+    if (!user) {
+        return res.status(401).json({ status: 401, error: "Credential does not match our record" })
+    }
+
+    const expirationTime = calculateExpirationTime(process.env.PASSWORD_RESET_TOKEN_EXPIRY);
+
+    let token = await Token.create({
+        user: user._id,
+        type: 'reset-password',
+        token: crypto.randomBytes(32).toString('hex'),
+        expirationTime
+    })
+
+    resetPasswordMail(user, token)
+
+    return res.status(200).json({ status: 200, message: "We have successfully sent password reset link to your valid email address." })
+}
+
+const checkResetPasswordToken = async (req, res) => {
+    let token = await Token.findOne({ token: req.body.token, type: 'reset-password' });
+
+    if (!token) {
+        return res.status(400).json({ status: 400, error: "Invalid token or token may have expired." })
+    }
+
+    const user = await User.findById(token?.user).select("-password -refreshToken")
+
+    if (!user) {
+        return res.status(401).json({ status: 401, error: "Invalid refresh token" })
+    }
+
+    return res.status(200).json({ status: 200, data: { user }, message: "Valid token" });
+}
+
+const resetPassword = async (req, res) => {
+    const { password } = req.body
+    let token = await Token.findOne({ token: req.params.token, type: 'reset-password' });
+
+    if (!token) {
+        return res.status(400).json({ status: 400, error: "Invalid token or token may have expired." })
+    }
+
+    const user = await User.findById(token.user)
+    user.password = password
+    await user.save()
+
+    return res.status(200).json({ status: 200, message: "You have successfully reset your password." })
 }
 
 export {
@@ -231,5 +287,7 @@ export {
     logout,
     refreshAccessToken,
     changeCurrentPassword,
-    getCurrentUser,
+    forgetPassword,
+    checkResetPasswordToken,
+    resetPassword
 }
