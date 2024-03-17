@@ -16,7 +16,17 @@ const register = async (state, setError) => {
             body: JSON.stringify({ name: state.name, email: state.email, password: state.password, confirm_password: state.confirm_password })
         });
 
-        return await response.json();
+        const res = await response.json();
+        
+        if (res.status !== 200 && res.validation) {
+            const newErrors = {};
+            res.validation.inner.forEach(err => {
+                newErrors[err.path] = err.message;
+            });
+            setError(newErrors);
+        }
+        
+        return res
 
     } catch (error) {
         if (error instanceof yup.ValidationError) {
@@ -58,7 +68,17 @@ const login = async (state, setError) => {
             body: JSON.stringify({ email: state.email, password: state.password })
         });
 
-        return await response.json();
+        const res = await response.json();
+        
+        if (res.status !== 200 && res.validation) {
+            const newErrors = {};
+            res.validation.inner.forEach(err => {
+                newErrors[err.path] = err.message;
+            });
+            setError(newErrors);
+        }
+        
+        return res
 
     } catch (error) {
         if (error instanceof yup.ValidationError) {
@@ -118,7 +138,17 @@ const forgotPassword = async (state, setError) => {
             body: JSON.stringify({ email: state.email })
         });
 
-        return await response.json();
+        const res = await response.json();
+        
+        if (res.status !== 200 && res.validation) {
+            const newErrors = {};
+            res.validation.inner.forEach(err => {
+                newErrors[err.path] = err.message;
+            });
+            setError(newErrors);
+        }
+        
+        return res
 
     } catch (error) {
         if (error instanceof yup.ValidationError) {
@@ -156,7 +186,17 @@ const resetPassword = async (state, setError, token) => {
             body: JSON.stringify({ email: state.email, password: state.password, confirm_password: state.confirm_password })
         });
     
-        return await response.json();
+        const res = await response.json();
+        
+        if (res.status !== 200 && res.validation) {
+            const newErrors = {};
+            res.validation.inner.forEach(err => {
+                newErrors[err.path] = err.message;
+            });
+            setError(newErrors);
+        }
+        
+        return res
 
     } catch (error) {
         if (error instanceof yup.ValidationError) {
@@ -183,7 +223,17 @@ const changePassword = async (state, setError) => {
             body: JSON.stringify({ old_password: state.old_password, new_password: state.new_password, confirm_password: state.confirm_password })
         });
     
-        return await response.json();
+        const res = await response.json();
+        
+        if (res.status !== 200 && res.validation) {
+            const newErrors = {};
+            res.validation.inner.forEach(err => {
+                newErrors[err.path] = err.message;
+            });
+            setError(newErrors);
+        }
+        
+        return res
 
     } catch (error) {
         if (error instanceof yup.ValidationError) {

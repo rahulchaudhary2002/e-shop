@@ -35,7 +35,7 @@ const Header = () => {
                         dispatch(setCurrentUser(res.data.user))
                     }
                 })
-    }, [selector.user])
+    }, [])
 
     return (
         <>
