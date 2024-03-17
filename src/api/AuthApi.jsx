@@ -197,6 +197,23 @@ const changePassword = async (state, setError) => {
     }
 }
 
+const getCurrentUser = async () => {
+    try {
+        const response = await fetch(`${API_URL}/api/current-user`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${jsCookie.get('accessToken')}`
+            },
+        });
+    
+        return await response.json();
+
+    } catch (error) {
+        return error
+    }
+}
+
 export {
     register,
     verify,
@@ -206,5 +223,6 @@ export {
     forgotPassword,
     checkRestPasswordToken,
     resetPassword,
-    changePassword
+    changePassword,
+    getCurrentUser
 }

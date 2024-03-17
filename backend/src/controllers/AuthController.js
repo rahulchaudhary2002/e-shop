@@ -281,6 +281,10 @@ const resetPassword = async (req, res) => {
     return res.status(200).json({ status: 200, message: "You have successfully reset your password." })
 }
 
+const getCurrentUser = async (req, res) => {
+    return res.status(200).json({ status: 200, data: { user: req.user }, message: "User fetched successfully" })
+}
+
 export {
     register,
     verify,
@@ -290,5 +294,6 @@ export {
     changeCurrentPassword,
     forgetPassword,
     checkResetPasswordToken,
-    resetPassword
+    resetPassword,
+    getCurrentUser
 }
