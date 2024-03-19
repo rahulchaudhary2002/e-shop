@@ -45,7 +45,7 @@ export default function Login(props) {
                     if (res.status == 200) {
                         storeAccessToken(res.data.accessToken)
                         toast.success(res.message)
-                        navigate('/administrator')
+                        navigate(-1)
                     }
                     else if(res.status) {
                         toast.error(res.error)

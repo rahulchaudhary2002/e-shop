@@ -1,43 +1,25 @@
-import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import Loading from '../../../common/components/Loading';
-import jsCookie from 'js-cookie';
-import { getCategories } from '../../../api/CategoryApi';
 import Pagination from '../../../common/components/Pagination';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCategory, setPage } from '../../../features/categorySlice';
+import { API_URL } from '../../../constants';
+import CreateCategory from './CreateCategory';
+import EditCategory from './EditCategory';
 
 const Category = () => {
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(true)
-    const [page, setPage] = useState(1)
-    const [perPage, setPerPage] = useState(10)
-    const [categories, setCategories] = useState([])
-    const [totalRecords, setTotalRecords] = useState(0)
+    const dispatch = useDispatch()
+    const selector = useSelector(state => state.category)
 
-    useEffect(() => {
-        setLoading(true)
-        if (!jsCookie.get('accessToken')) {
-            return navigate('/administrator/login')
-        }
+    const handleSetPage = (page) => {
+        dispatch(setPage(page));
+    };
 
-        getCategories(page, perPage)
-            .then(res => {
-                if (res.status === 200) {
-                    setCategories(res.data.categories)
-                    setTotalRecords(res.data.totalRecords)
-                    setLoading(false);
-                }
-            })
-    }, [page])
-
-    if (loading)
-        return <Loading />
-    else
-        return (
+    return (
+        <>
             <div className='container-fluid'>
                 <div className="card">
                     <div className="card-header d-flex justify-content-between">
                         <h5 className='card-title mt-2'>Category</h5>
-                        <Link to="/administrator/category/create" className='btn btn-md btn-primary'><i className="fa fa-plus"></i> create category</Link>
+                        <button className='btn btn-md btn-primary' data-bs-toggle="modal" data-bs-target="#create-category-model"><i className="fa fa-plus"></i> create category</button>
                     </div>
                     <div className="card-body">
                         <table className='table'>
@@ -45,26 +27,36 @@ const Category = () => {
                                 <tr>
                                     <th>SN</th>
                                     <th>Name</th>
+                                    <th>Image</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {categories.map((category, index) => (
+                                {selector.categories.length > 0 ? selector.categories.map((category, index) => (
                                     <tr key={index}>
                                         <td>{index + 1}</td>
                                         <td>{category.name}</td>
+                                        <td><img src={`${API_URL}/${category.image}`} alt={category.name} height={50} width={50} /></td>
                                         <td>
-                                            <Link to={`/edit-category/${category._id}`} className="btn btn-sm btn-primary"><i className="fa fa-edit"></i></Link>
+                                            <button className="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#update-category-model" onClick={() => dispatch(setCategory(category))}><i className="fa fa-edit"></i></button>
                                         </td>
                                     </tr>
-                                ))}
+                                )) :
+                                    <tr>
+                                        <td colSpan={4}>No data found</td>
+                                    </tr>
+                                }
                             </tbody>
                         </table>
-                        <Pagination total={totalRecords ? totalRecords : 1} current={page} length={perPage} setPage={setPage} />
+                        <Pagination total={selector.totalRecords ? selector.totalRecords : 1} current={selector.page} length={selector.perPage} setPage={handleSetPage} />
                     </div>
                 </div>
             </div>
-        )
+
+            <CreateCategory />
+            <EditCategory />
+        </>
+    )
 }
 
 export default Category

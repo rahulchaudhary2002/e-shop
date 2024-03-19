@@ -30,7 +30,7 @@ const uploadCategoryImage = multer({
     storage,
     fileFilter,
     limits: {
-        fileSize: 200000
+        fileSize: 20 * 1024 * 1024
     }
 })
 

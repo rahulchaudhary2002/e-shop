@@ -39,7 +39,7 @@ const ChangePassword = (props) => {
         return (
             <div className="container-fluid">
                 <div className="row">
-                    <div className="col-lg-3 col-md-6 offset-md-4 col-sm-6 offset-sm-3">
+                    <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
                         <div className="card">
                             <div className="card-header bg-primary">
                                 <h4 className="card-title text-white text-center mt-2">Reset Password</h4>

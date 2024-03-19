@@ -18,6 +18,21 @@ const createCategorySchema = yup.object().shape({
         )
 });
 
+const updateCategorySchema = yup.object().shape({
+    name: yup.string().required('Name is required.'),
+    file: yup
+        .mixed()
+        .test(
+            'fileType',
+            'Only image files are allowed (jpg, jpeg, png, gif)',
+            (value) => {
+                if (!value) return true;
+                return ['image/jpeg', 'image/png', 'image/gif'].includes(value.type);
+            }
+        )
+});
+
 export {
-    createCategorySchema
+    createCategorySchema,
+    updateCategorySchema
 }

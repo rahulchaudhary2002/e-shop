@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AdministratorLayout from './administrator/components/Layout';
 import Dashboard from './administrator/pages/Dashboard';
@@ -12,8 +13,26 @@ import Verify from './administrator/pages/auth/Verify';
 import { ToastContainer } from 'react-toastify';
 import ResetPassword from './administrator/pages/auth/ResetPassword';
 import ChangePassword from './administrator/pages/auth/ChangePassword';
+import EditCategory from './administrator/pages/category/EditCategory';
+import { setCurrentUser } from "./features/authSlice";
+import { useDispatch } from 'react-redux';
+import jsCookie from "js-cookie"
+import { getCurrentUser } from './api/AuthApi';
+import CategoryLayout from './administrator/pages/category/CategoryLayout';
 
 function App() {
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if (jsCookie.get('accessToken'))
+            getCurrentUser()
+                .then(res => {
+                    if (res.status === 200) {
+                        dispatch(setCurrentUser(res.data.user))
+                    }
+                })
+    }, [])
+
     return (
         <BrowserRouter>
             <ToastContainer />
@@ -29,11 +48,10 @@ function App() {
                     <Route path="forget-password" element={<ForgetPassword />} />
                     <Route path="reset-password/:token" element={<ResetPassword />} />
                     <Route path="" element={<AdministratorLayout />} >
-                        <Route path="change-password" element={<ChangePassword />} />
                         <Route path="" element={<Dashboard />} />
-                        <Route path='category/*'>
+                        <Route path="change-password" element={<ChangePassword />} />
+                        <Route path="category" element={<CategoryLayout />} >
                             <Route path="" element={<Category />} />
-                            <Route path="create" element={<CreateCategory />} />
                         </Route>
                     </Route>
                 </Route>

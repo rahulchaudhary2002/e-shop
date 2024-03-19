@@ -1,30 +1,34 @@
 import React, { useRef, useState } from 'react'
-import { createCategory } from '../../../api/CategoryApi';
+import { createCategory, updateCategory } from '../../../api/CategoryApi';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCategories } from '../../../features/categorySlice';
+import { setCategories, setCategory } from '../../../features/categorySlice';
 
-const CreateCategory = () => {
-    const dispath = useDispatch()
+const EditCategory = () => {
+    const dispatch = useDispatch()
     const selector = useSelector(state => state.category)
     const [disable, setDisable] = useState(false)
-    const [state, setState] = useState({ name: '', file: '' })
+    const [file, setFile] = useState('')
     const [errors, setErrors] = useState({ name: '', file: '' })
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef('');
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setDisable(true)
 
-        const res = await createCategory(state, setErrors)
+        const res = await updateCategory({ id: selector.category?._id, name: selector.category?.name, old_file: selector.category?.image, file }, setErrors)
 
         if (res.status === 200) {
-            dispath(setCategories([res.data.category, ...selector.categories]))
             toast.success(res.message)
-            setState({ name: '', file: '' })
+            const updatedCategories = selector.categories.map(category =>
+                category._id === res.data.category._id ? { ...category, name: res.data.category.name, image: res.data.category.image } : category
+            );
+            dispatch(setCategories(updatedCategories))
+            dispatch(setCategory({ id: '', name: '', file: '' }))
+            setFile('')
             setErrors({ name: '', file: '' })
-            fileInputRef.current.value = null;
-            document.getElementById('close-create-model').click()
+            fileInputRef.current.value = '';
+            document.getElementById('close-update-model').click()
         }
         else if (res.status) {
             toast.error(res.error)
@@ -34,22 +38,22 @@ const CreateCategory = () => {
     }
 
     const handleChange = (e) => {
-        setState({ ...state, [e.target.name]: e.target.value });
+        dispatch(setCategory({ ...selector.category, [e.target.name]: e.target.value }));
     }
 
     const handleFileChange = (e) => {
-        setState({ ...state, [e.target.name]: e.target.files[0] });
+        setFile(e.target.files[0]);
     }
 
     return (
         <>
-            <div className="modal fade" id="create-category-model">
+            <div className="modal fade" id="update-category-model">
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
 
                         <div className="modal-header">
-                            <h4 className="modal-title">Create Category</h4>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" id='close-create-model'></button>
+                            <h4 className="modal-title">Update Category</h4>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal" id='close-update-model'></button>
                         </div>
 
                         <div className="modal-body">
@@ -58,7 +62,7 @@ const CreateCategory = () => {
                                     <div className="col-md-12">
                                         <div className="form-group">
                                             <label htmlFor="name">Name</label>
-                                            <input className='form-control' type="text" name='name' id='name' value={state.name} onChange={handleChange} />
+                                            <input className='form-control' type="text" name='name' id='name' value={selector.category?.name} onChange={handleChange} />
                                             <span className="text-danger">{errors.name}</span>
                                         </div>
                                     </div>
@@ -82,4 +86,4 @@ const CreateCategory = () => {
     )
 }
 
-export default CreateCategory
+export default EditCategory
