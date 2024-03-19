@@ -35,7 +35,8 @@ const register = async (req, res) => {
         name,
         email,
         password,
-        role
+        role,
+        isActive: role == 'customer' ? true : false
     })
 
     const createdUser = await User.findById(user._id).select(

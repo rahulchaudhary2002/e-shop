@@ -4,6 +4,7 @@ import './db/connection.js'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import AuthRoute from './routes/AuthRoute.js'
+import UserRoute from './routes/UserRoute.js'
 import CategoryRoute from './routes/CategoryRoute.js'
 
 const app = express()
@@ -15,6 +16,7 @@ app.use('/public', express.static('public'));
 app.use(cookieParser())
 
 app.use('/api', AuthRoute)
+app.use('/api', UserRoute)
 app.use('/api', CategoryRoute)
 
 app.listen(port, ()=>{

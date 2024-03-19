@@ -8,6 +8,6 @@ const router = Router()
 
 router.route("/get-category").get(getCategories);
 router.route("/create-category").post(verifyJWT, hasRole(['admin']), uploadCategoryImage.single('file'), validateCreateCategoryRequest, createCategory)
-router.route("/update-category/:id").post(verifyJWT, hasRole(['admin']), uploadCategoryImage.single('file'), validateCreateCategoryRequest, updateCategory)
+router.route("/update-category/:id").put(verifyJWT, hasRole(['admin']), uploadCategoryImage.single('file'), validateCreateCategoryRequest, updateCategory)
 
 export default router

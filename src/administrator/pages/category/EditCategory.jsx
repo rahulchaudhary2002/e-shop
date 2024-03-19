@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import { createCategory, updateCategory } from '../../../api/CategoryApi';
+import { updateCategory } from '../../../api/CategoryApi';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCategories, setCategory } from '../../../features/categorySlice';
@@ -21,11 +21,9 @@ const EditCategory = () => {
         if (res.status === 200) {
             toast.success(res.message)
             const updatedCategories = selector.categories.map(category =>
-                category._id === res.data.category._id ? { ...category, name: res.data.category.name, image: res.data.category.image } : category
+                category._id === res.data.category._id ? { ...category, ...res.data.category } : category
             );
             dispatch(setCategories(updatedCategories))
-            dispatch(setCategory({ id: '', name: '', file: '' }))
-            setFile('')
             setErrors({ name: '', file: '' })
             fileInputRef.current.value = '';
             document.getElementById('close-update-model').click()

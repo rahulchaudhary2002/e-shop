@@ -3,7 +3,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import AdministratorLayout from './administrator/components/Layout';
 import Dashboard from './administrator/pages/Dashboard';
 import Category from './administrator/pages/category/Category';
-import CreateCategory from './administrator/pages/category/CreateCategory';
 import Login from './administrator/pages/auth/Login';
 import Register from './administrator/pages/auth/Register';
 import ForgetPassword from './administrator/pages/auth/ForgetPassword';
@@ -13,12 +12,13 @@ import Verify from './administrator/pages/auth/Verify';
 import { ToastContainer } from 'react-toastify';
 import ResetPassword from './administrator/pages/auth/ResetPassword';
 import ChangePassword from './administrator/pages/auth/ChangePassword';
-import EditCategory from './administrator/pages/category/EditCategory';
 import { setCurrentUser } from "./features/authSlice";
 import { useDispatch } from 'react-redux';
 import jsCookie from "js-cookie"
 import { getCurrentUser } from './api/AuthApi';
 import CategoryLayout from './administrator/pages/category/CategoryLayout';
+import UserLayout from './administrator/pages/user/UserLayout';
+import User from './administrator/pages/user/User';
 
 function App() {
     const dispatch = useDispatch()
@@ -52,6 +52,9 @@ function App() {
                         <Route path="change-password" element={<ChangePassword />} />
                         <Route path="category" element={<CategoryLayout />} >
                             <Route path="" element={<Category />} />
+                        </Route>
+                        <Route path="user" element={<UserLayout />} >
+                            <Route path="" element={<User />} />
                         </Route>
                     </Route>
                 </Route>

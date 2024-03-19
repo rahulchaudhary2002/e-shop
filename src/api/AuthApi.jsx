@@ -11,7 +11,7 @@ const register = async (state, setError) => {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'role': 'vendor'
+                'role': state.role ? state.role : 'customer'
             },
             body: JSON.stringify({ name: state.name, email: state.email, password: state.password, confirm_password: state.confirm_password })
         });

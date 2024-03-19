@@ -14,7 +14,7 @@ export default function Register(props) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = await register(state, setErrors)
+        const data = await register({...state, role: 'customer'}, setErrors)
 
         if (data.status === 200) {
             toast.success(data.message)

@@ -2,27 +2,27 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useNavigate } from 'react-router-dom';
 import jsCookie from 'js-cookie';
-import { getCategories } from '../../../api/CategoryApi';
-import { setCategories, setTotalRecords } from '../../../features/categorySlice';
+import { getUsers } from '../../../api/UserApi';
+import { setUsers, setTotalRecords } from '../../../features/userSlice';
 import Loading from '../../../common/components/Loading';
 
-const CategoryLayout = () => {
+const UserLayout = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
-    const selector = useSelector(state => state.category)
+    const selector = useSelector(state => state.user)
     const authUser = useSelector(state => state.auth)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         setLoading(true)
-        if (!jsCookie.get('accessToken') || authUser.user.role == 'customer') {
+        if (!jsCookie.get('accessToken') && authUser.user.role == 'admin') {
             return navigate('/administrator/login')
         }
 
-        getCategories(selector.page, selector.perPage)
+        getUsers(selector.page, selector.perPage)
             .then(res => {
                 if (res.status === 200) {
-                    dispatch(setCategories(res.data.categories))
+                    dispatch(setUsers(res.data.users))
                     dispatch(setTotalRecords(res.data.totalRecords))
                     setLoading(false);
                 }
@@ -37,4 +37,4 @@ const CategoryLayout = () => {
         )
 }
 
-export default CategoryLayout
+export default UserLayout
