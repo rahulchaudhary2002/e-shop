@@ -30,6 +30,11 @@ const Sidebar = () => {
                         <i className="fa fa-list-alt"></i> Category
                     </Link>
                 </li>
+                <li>
+                    <Link to="/administrator/product" className={`nav-link text-white d-flex align-items-center gap-3 ${location.pathname==="/administrator/product" ? "active" : ""}`}>
+                        <i className="fa fa-product-hunt"></i> Product
+                    </Link>
+                </li>
             </ul>
         </div>
     )

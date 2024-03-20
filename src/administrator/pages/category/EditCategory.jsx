@@ -26,6 +26,7 @@ const EditCategory = () => {
             dispatch(setCategories(updatedCategories))
             setErrors({ name: '', file: '' })
             fileInputRef.current.value = '';
+            setFile('');
             document.getElementById('close-update-model').click()
         }
         else if (res.status) {

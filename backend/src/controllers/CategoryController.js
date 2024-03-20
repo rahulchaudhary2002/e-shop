@@ -1,4 +1,5 @@
 import Category from '../models/CategoryModel.js'
+import removeFile from '../utils/RemoveFile.js';
 
 const getCategories = async (req, res) => {
     const page = parseInt(req.query.page) || 1
@@ -57,6 +58,9 @@ const updateCategory = async (req, res) => {
 
     try {
         const updatedCategory = await existingCategory.save();
+
+        if (req.file)
+            removeFile(req.body.old_file)
 
         return res.status(200).json({
             status: 200,

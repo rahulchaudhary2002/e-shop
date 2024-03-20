@@ -19,6 +19,8 @@ import { getCurrentUser } from './api/AuthApi';
 import CategoryLayout from './administrator/pages/category/CategoryLayout';
 import UserLayout from './administrator/pages/user/UserLayout';
 import User from './administrator/pages/user/User';
+import ProductLayout from './administrator/pages/product/ProductLayout';
+import Product from './administrator/pages/product/Product';
 
 function App() {
     const dispatch = useDispatch()
@@ -50,11 +52,14 @@ function App() {
                     <Route path="" element={<AdministratorLayout />} >
                         <Route path="" element={<Dashboard />} />
                         <Route path="change-password" element={<ChangePassword />} />
+                        <Route path="user" element={<UserLayout />} >
+                            <Route path="" element={<User />} />
+                        </Route>
                         <Route path="category" element={<CategoryLayout />} >
                             <Route path="" element={<Category />} />
                         </Route>
-                        <Route path="user" element={<UserLayout />} >
-                            <Route path="" element={<User />} />
+                        <Route path="product" element={<ProductLayout />} >
+                            <Route path="" element={<Product />} />
                         </Route>
                     </Route>
                 </Route>

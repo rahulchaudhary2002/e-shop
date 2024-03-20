@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser'
 import AuthRoute from './routes/AuthRoute.js'
 import UserRoute from './routes/UserRoute.js'
 import CategoryRoute from './routes/CategoryRoute.js'
+import ProductRoute from './routes/ProductRoute.js'
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -18,6 +19,7 @@ app.use(cookieParser())
 app.use('/api', AuthRoute)
 app.use('/api', UserRoute)
 app.use('/api', CategoryRoute)
+app.use('/api', ProductRoute)
 
 app.listen(port, ()=>{
     console.log(`server started successful at code ${port}`)
