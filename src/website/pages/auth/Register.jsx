@@ -1,44 +1,34 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import { login, refreshToken } from '../../../api/AuthApi';
+import { refreshToken, register } from '../../../api/AuthApi';
 import Loading from '../../../common/components/Loading';
-import { storeAccessToken, storeRefreshToken } from '../../../constants';
+import { storeAccessToken } from '../../../constants';
 import jsCookie from 'js-cookie';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { setCurrentUser } from '../../../features/authSlice';
 
-export default function Login(props) {
+export default function Register(props) {
     const navigate = useNavigate();
-    const dispatch = useDispatch()
-    const [state, setState] = useState({ email: '', password: '' });
-    const [errors, setErrors] = useState({ email: '', password: '' });
+    const [state, setState] = useState({ name: '', email: '', password: '', confirm_password: '' });
+    const [errors, setErrors] = useState({ name: '', email: '', password: '', confirm_password: '' });
     const [loading, setLoading] = useState(true)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true)
+        const data = await register({...state, role: 'customer'}, setErrors)
 
-        const res = await login(state, setErrors)
-
-        if (res.status === 200) {
-            storeAccessToken(res.data.accessToken)
-            storeRefreshToken(res.data.refreshToken)
-            dispatch(setCurrentUser(res.data.loggedInUser))
-            toast.success(res.message)
-            navigate('/administrator')
+        if (data.status === 200) {
+            toast.success(data.message)
+            navigate('/login')
         }
-        else if (res.status) {
-            toast.error(res.error)
+        else if (data.status) {
+            toast.error(data.error)
         }
-
-        setLoading(false)
     }
 
     const handleChange = (e) => {
         setState({ ...state, [e.target.name]: e.target.value });
     }
-
+    
     useEffect(() => {
         if (jsCookie.get('accessToken')) {
             navigate(-1)
@@ -49,7 +39,7 @@ export default function Login(props) {
                     if (res.status == 200) {
                         storeAccessToken(res.data.accessToken)
                         toast.success(res.message)
-                        navigate(-1)
+                        navigate('/')
                     }
                     else if(res.status) {
                         toast.error(res.error)
@@ -66,16 +56,23 @@ export default function Login(props) {
         return <Loading />
     else
         return (
-            <div className="d-flex align-items-center justify-content-center" style={{ 'minHeight': '100vh' }}>
+            <div className="d-flex align-items-center justify-content-center">
                 <div className="row">
                     <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
                         <div className="card">
                             <div className="card-header bg-primary">
-                                <h4 className="card-title text-white text-center mt-2">Login</h4>
+                                <h4 className="card-title text-white text-center mt-2">Register</h4>
                             </div>
                             <div className="card-body">
                                 <form action="/" onSubmit={handleSubmit}>
                                     <div className="row g-2">
+                                        <div className="col-md-12">
+                                            <div className="form-group">
+                                                <label htmlFor="name">Name</label>
+                                                <input className="form-control" type="text" name="name" onChange={handleChange} value={state.name} />
+                                                <span className="text-danger">{errors.name}</span>
+                                            </div>
+                                        </div>
                                         <div className="col-md-12">
                                             <div className="form-group">
                                                 <label htmlFor="email">Email</label>
@@ -91,12 +88,16 @@ export default function Login(props) {
                                             </div>
                                         </div>
                                         <div className="col-md-12">
-                                            <Link className='float-end text-decoration-none' to={'/administrator/forget-password'}>Forgot your password?</Link>
+                                            <div className="form-group">
+                                                <label htmlFor="confirm_password">Confirm Password</label>
+                                                <input className="form-control" type="password" name="confirm_password" onChange={handleChange} value={state.confirm_password} />
+                                                <span className="text-danger">{errors.confirm_password}</span>
+                                            </div>
                                         </div>
                                         <div className="col-md-12">
-                                            <button className="w-100 btn btn-md btn-primary">Login</button>
+                                            <button className="w-100 btn btn-primary">Register</button>
                                         </div>
-                                        <span className="text-center">Don't have an account yet? <Link className="text-center text-decoration-none" to={'/administrator/register'}>Register now</Link></span>
+                                        <span className="text-center">Already have an account? <Link className="text-center text-decoration-none" to={'/login'}>Login</Link></span>
                                     </div>
                                 </form>
                             </div>

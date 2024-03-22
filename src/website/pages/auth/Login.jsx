@@ -26,7 +26,7 @@ export default function Login(props) {
             storeRefreshToken(res.data.refreshToken)
             dispatch(setCurrentUser(res.data.loggedInUser))
             toast.success(res.message)
-            navigate('/administrator')
+            navigate(-1)
         }
         else if (res.status) {
             toast.error(res.error)
@@ -41,7 +41,7 @@ export default function Login(props) {
 
     useEffect(() => {
         if (jsCookie.get('accessToken')) {
-            navigate(-1)
+            return navigate('/')
         }
         else if (!jsCookie.get('accessToken') && jsCookie.get('refreshToken')) {
             refreshToken()
@@ -66,7 +66,7 @@ export default function Login(props) {
         return <Loading />
     else
         return (
-            <div className="d-flex align-items-center justify-content-center" style={{ 'minHeight': '100vh' }}>
+            <div className="d-flex align-items-center justify-content-center">
                 <div className="row">
                     <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
                         <div className="card">
@@ -91,12 +91,12 @@ export default function Login(props) {
                                             </div>
                                         </div>
                                         <div className="col-md-12">
-                                            <Link className='float-end text-decoration-none' to={'/administrator/forget-password'}>Forgot your password?</Link>
+                                            <Link className='float-end text-decoration-none' to={'/forget-password'}>Forgot your password?</Link>
                                         </div>
                                         <div className="col-md-12">
                                             <button className="w-100 btn btn-md btn-primary">Login</button>
                                         </div>
-                                        <span className="text-center">Don't have an account yet? <Link className="text-center text-decoration-none" to={'/administrator/register'}>Register now</Link></span>
+                                        <span className="text-center">Don't have an account yet? <Link className="text-center text-decoration-none" to={'/register'}>Register now</Link></span>
                                     </div>
                                 </form>
                             </div>

@@ -21,6 +21,15 @@ import UserLayout from './administrator/pages/user/UserLayout';
 import User from './administrator/pages/user/User';
 import ProductLayout from './administrator/pages/product/ProductLayout';
 import Product from './administrator/pages/product/Product';
+import ProductDetail from './website/pages/ProductDetail';
+import UserLogin from './website/pages/auth/Login';
+import UserRegister from './website/pages/auth/Register';
+import UserVerify from './website/pages/auth/Verify';
+import UserForgetPassword from './website/pages/auth/ForgetPassword';
+import UserResetPassword from './website/pages/auth/ResetPassword';
+import UserChangePassword from './website/pages/auth/ChangePassword';
+import CategoryProduct from './website/pages/CategoryProduct';
+import Search from './website/pages/Search';
 
 function App() {
     const dispatch = useDispatch()
@@ -40,7 +49,16 @@ function App() {
             <ToastContainer />
             <Routes>
                 <Route path='' element={<Layout />}>
+                    <Route path="login" element={<UserLogin />} />
+                    <Route path="register" element={<UserRegister />} />
+                    <Route path="verify/:token" element={<UserVerify />} />
+                    <Route path="forget-password" element={<UserForgetPassword />} />
+                    <Route path="reset-password/:token" element={<UserResetPassword />} />
+                    <Route path="change-password" element={<UserChangePassword />} />
                     <Route path='/' element={<Home />} />
+                    <Route path='/product/:id' element={<ProductDetail />} />
+                    <Route path='/category/:id' element={<CategoryProduct />} />
+                    <Route path='/product' element={<Search />} />
                 </Route>
 
                 <Route path='/administrator/*'>

@@ -6,7 +6,7 @@ const getCategories = async (req, res) => {
     const perPage = parseInt(req.query.perPage) || 10
     const skip = (page - 1) * perPage;
 
-    const categories = await Category.find().skip(skip).limit(perPage)
+    const categories = await Category.find().sort({ _id: -1 }).skip(skip).limit(perPage)
     const totalRecords = await Category.countDocuments()
 
     return res.status(200).json({

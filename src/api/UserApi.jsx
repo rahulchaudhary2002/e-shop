@@ -3,7 +3,7 @@ import { API_URL } from '../constants'
 import jsCookie from 'js-cookie';
 import { createUserSchema, updateUserSchema } from '../common/validations/UserValidation';
 
-const getUsers = async (page, perPage) => {
+const getUsers = async (page = 1, perPage = 10) => {
     const response = await fetch(`${API_URL}/api/get-user?page=${page}&perPage=${perPage}`, {
         method: 'GET',
         headers: {

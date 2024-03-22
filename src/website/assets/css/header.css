@@ -55,6 +55,7 @@
 }
 
 .header button {
-	width: 30%;
+	width: 8%;
 	cursor: pointer;
+	height: 38px;
 }

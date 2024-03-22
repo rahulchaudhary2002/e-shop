@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 const Footer = () => {
     return (
         <>
-            <footer className="footer">
+            <footer className="footer mt-3">
                 <div className="container">
                     <div className="footer-top">
                         <div className="row g-3">
@@ -20,11 +20,11 @@ const Footer = () => {
                             <div className="col-md-3">
                                 <strong>Quick Links</strong>
                                 <div className="footer-top-quick-links d-flex flex-column">
-                                    <Link className='text-dark text-decoration-none' to="./index.html" title="Home">Home</Link>
-                                    <Link className='text-dark text-decoration-none' to="./shop.html" title="Shop">Shop</Link>
-                                    <Link className='text-dark text-decoration-none' to="./blog.html" title="Blog">Blog</Link>
-                                    <Link className='text-dark text-decoration-none' to="./contact.html" title="Contact">Contact</Link>
-                                    <Link className='text-dark text-decoration-none' to="#" title="About Us">About Us</Link>
+                                    <Link className='text-dark text-decoration-none' to="/" title="Home">Home</Link>
+                                    <Link className='text-dark text-decoration-none' to="/product" title="Shop">Shop</Link>
+                                    <Link className='text-dark text-decoration-none' to="/" title="Blog">Blog</Link>
+                                    <Link className='text-dark text-decoration-none' to="/" title="Contact">Contact</Link>
+                                    <Link className='text-dark text-decoration-none' to="/" title="About Us">About Us</Link>
                                 </div>
                             </div>
                             <div className="col-md-5">

@@ -1,13 +1,19 @@
 import Product from '../models/ProductModel.js'
+import Category from '../models/CategoryModel.js'
 import removeFile from '../utils/RemoveFile.js';
 
 const getProducts = async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const perPage = parseInt(req.query.perPage) || 10
     const skip = (page - 1) * perPage;
+    let query = {};
 
-    const products = await Product.find().populate('category').skip(skip).limit(perPage)
-    const totalRecords = await Product.countDocuments()
+    if (req.query.search) {
+        query.name = { $regex: new RegExp(req.query.search, 'i') };
+    }
+    
+    const products = await Product.find(query).populate('category').sort({ _id: -1 }).skip(skip).limit(perPage)
+    const totalRecords = await Product.countDocuments(query)
 
     return res.status(200).json({
         status: 200,
@@ -70,8 +76,53 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const findById = async (req, res) => {
+    try {
+        const productId = req.params.id;
+        let product = await Product.findById(productId);
+    
+        if (!product)
+            return res.status(404).json({ status: 404, error: "Product not found" });
+    
+        return res.status(200).json({
+            status: 200,
+            data: { product }
+        })
+    }
+    catch(error) {
+        return res.status(404).json({ status: 404, error: "Product not found" });
+    }
+}
+
+const findByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        const page = parseInt(req.query.page) || 1
+        const perPage = parseInt(req.query.perPage) || 10
+        const skip = (page - 1) * perPage;
+    
+        const category = await Category.findById(categoryId)
+    
+        if (!category)
+            return res.status(404).json({ status: 404, error: "Category not found" });
+    
+        const products = await Product.find({ category: categoryId }).sort({ _id: -1 }).skip(skip).limit(perPage);
+        const totalRecords = await Product.countDocuments({ category: categoryId })
+    
+        return res.status(200).json({
+            status: 200,
+            data: { category, products, totalRecords, page, perPage }
+        })
+    }
+    catch(error) {
+        return res.status(404).json({ status: 404, error: "Product not found" });
+    }
+}
+
 export {
     getProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    findById,
+    findByCategory
 }

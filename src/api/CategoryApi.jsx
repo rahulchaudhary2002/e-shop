@@ -3,7 +3,7 @@ import { API_URL } from '../constants'
 import jsCookie from 'js-cookie';
 import { createCategorySchema, updateCategorySchema } from '../common/validations/CategoryValidation';
 
-const getCategories = async (page, perPage) => {
+const getCategories = async (page = 1, perPage = 10) => {
     const response = await fetch(`${API_URL}/api/get-category?page=${page}&perPage=${perPage}`);
 
     return await response.json()

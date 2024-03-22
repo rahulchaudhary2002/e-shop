@@ -1,32 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
-import { login, refreshToken } from '../../../api/AuthApi';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { checkRestPasswordToken, resetPassword } from '../../../api/AuthApi';
 import Loading from '../../../common/components/Loading';
-import { storeAccessToken, storeRefreshToken } from '../../../constants';
-import jsCookie from 'js-cookie';
 import { toast } from 'react-toastify';
-import { useDispatch } from 'react-redux';
-import { setCurrentUser } from '../../../features/authSlice';
 
-export default function Login(props) {
+const ResetPassword = (props) => {
     const navigate = useNavigate();
-    const dispatch = useDispatch()
-    const [state, setState] = useState({ email: '', password: '' });
-    const [errors, setErrors] = useState({ email: '', password: '' });
+    let { token } = useParams();
     const [loading, setLoading] = useState(true)
+    const [state, setState] = useState({ email: '', password: '', confirm_password: '' });
+    const [errors, setErrors] = useState({ email: '', password: '', confirm_password: '' });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true)
 
-        const res = await login(state, setErrors)
+        const res = await resetPassword(state, setErrors, token)
 
         if (res.status === 200) {
-            storeAccessToken(res.data.accessToken)
-            storeRefreshToken(res.data.refreshToken)
-            dispatch(setCurrentUser(res.data.loggedInUser))
             toast.success(res.message)
-            navigate('/administrator')
+            navigate('/login')
         }
         else if (res.status) {
             toast.error(res.error)
@@ -40,38 +33,31 @@ export default function Login(props) {
     }
 
     useEffect(() => {
-        if (jsCookie.get('accessToken')) {
-            navigate(-1)
+        const check = async () => {
+            const res = await checkRestPasswordToken(token)
+            if (res.status === 200) {
+                setState({...state, email: res.data.user.email})
+                setLoading(false);
+            }
+            else if (res.status) {
+                toast.error(res.error)
+                return navigate('/login')
+            }
         }
-        else if (!jsCookie.get('accessToken') && jsCookie.get('refreshToken')) {
-            refreshToken()
-                .then(res => {
-                    if (res.status == 200) {
-                        storeAccessToken(res.data.accessToken)
-                        toast.success(res.message)
-                        navigate(-1)
-                    }
-                    else if(res.status) {
-                        toast.error(res.error)
-                        setLoading(false);
-                    }
-                })
-        }
-        else {
-            setLoading(false);
-        }
+
+        check()
     }, [])
 
     if (loading)
         return <Loading />
     else
         return (
-            <div className="d-flex align-items-center justify-content-center" style={{ 'minHeight': '100vh' }}>
+            <div className="d-flex align-items-center justify-content-center">
                 <div className="row">
                     <div className="col-md-4 offset-md-4 col-sm-6 offset-sm-3">
                         <div className="card">
                             <div className="card-header bg-primary">
-                                <h4 className="card-title text-white text-center mt-2">Login</h4>
+                                <h4 className="card-title text-white text-center mt-2">Reset Password</h4>
                             </div>
                             <div className="card-body">
                                 <form action="/" onSubmit={handleSubmit}>
@@ -79,7 +65,7 @@ export default function Login(props) {
                                         <div className="col-md-12">
                                             <div className="form-group">
                                                 <label htmlFor="email">Email</label>
-                                                <input className="form-control" type="text" name="email" onChange={handleChange} value={state.email} />
+                                                <input className="form-control" type="text" name="email" value={state.email} readOnly disabled />
                                                 <span className="text-danger">{errors.email}</span>
                                             </div>
                                         </div>
@@ -91,12 +77,16 @@ export default function Login(props) {
                                             </div>
                                         </div>
                                         <div className="col-md-12">
-                                            <Link className='float-end text-decoration-none' to={'/administrator/forget-password'}>Forgot your password?</Link>
+                                            <div className="form-group">
+                                                <label htmlFor="confirm_password">Confirm Password</label>
+                                                <input className="form-control" type="password" name="confirm_password" onChange={handleChange} value={state.confirm_password} />
+                                                <span className="text-danger">{errors.confirm_password}</span>
+                                            </div>
                                         </div>
                                         <div className="col-md-12">
-                                            <button className="w-100 btn btn-md btn-primary">Login</button>
+                                            <button className="w-100 btn btn-primary">Reset Password</button>
                                         </div>
-                                        <span className="text-center">Don't have an account yet? <Link className="text-center text-decoration-none" to={'/administrator/register'}>Register now</Link></span>
+                                        <span className="text-center">Already have an account? <Link className="text-center text-decoration-none" to={'/login'}>Login</Link></span>
                                     </div>
                                 </form>
                             </div>
@@ -106,3 +96,5 @@ export default function Login(props) {
             </div>
         )
 }
+
+export default ResetPassword

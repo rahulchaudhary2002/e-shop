@@ -3,8 +3,8 @@ import { API_URL } from '../constants'
 import jsCookie from 'js-cookie';
 import { createProductSchema, updateProductSchema } from '../common/validations/ProductValidation';
 
-const getProducts = async (page, perPage) => {
-    const response = await fetch(`${API_URL}/api/get-product?page=${page}&perPage=${perPage}`);
+const getProducts = async (page = 1, perPage = 10, search = '') => {
+    const response = await fetch(`${API_URL}/api/get-product?page=${page}&perPage=${perPage}&search=${search}`);
 
     return await response.json()
 }
@@ -98,8 +98,22 @@ const updateProduct = async (state, setError) => {
     }
 }
 
+const findProductById = async (id) => {
+    const response = await fetch(`${API_URL}/api/product/${id}`);
+
+    return await response.json()
+}
+
+const findProductByCategory = async (id, page = 1, perPage = 10) => {
+    const response = await fetch(`${API_URL}/api/product/category/${id}?page=${page}&perPage=${perPage}`);
+
+    return await response.json()
+}
+
 export {
     getProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    findProductById,
+    findProductByCategory
 }
