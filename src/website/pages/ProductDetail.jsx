@@ -6,11 +6,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setProduct } from '../../features/productSlice';
 import { toast } from 'react-toastify';
 import { API_URL } from '../../constants';
+import { createCart } from '../../api/CartApi'
+import { setCarts } from '../../features/cartSlice';
+import jsCookie from 'js-cookie'
 
 const ProductDetail = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const selector = useSelector(state => state.product)
+    const cartSelector = useSelector(state => state.cart)
     const { id } = useParams()
     const [quantity, setQuantity] = useState(1)
     const [loading, setLoading] = useState(true)
@@ -19,7 +23,7 @@ const ProductDetail = () => {
         if (e.target.value > 0)
             setQuantity(e.target.value);
     }
-
+    
     const increment = () => {
         setQuantity(parseInt(quantity + 1));
     }
@@ -46,6 +50,22 @@ const ProductDetail = () => {
                 setLoading(false)
             })
     }, [dispatch])
+
+    const addToCart = async () => {
+        if (!jsCookie.get('accessToken'))
+            return navigate('/login')
+
+        createCart(selector.product._id, quantity)
+            .then(res => {
+                if (res.status == 200) {
+                    dispatch(setCarts([...cartSelector.carts, res.data.cart]))
+                    toast.success(res.message)
+                }
+                else {
+                    toast.error(res.error)
+                }
+            })
+    }
 
     if (loading)
         return <Loading />
@@ -75,7 +95,7 @@ const ProductDetail = () => {
                                         </div>
                                         <div className="mt-4 d-flex gap-2">
                                             <button type="button" className="btn btn-md btn-primary buy-now w-25">Buy Now</button>
-                                            <button type="button" className="btn btn-md btn-warning add-to-cart w-25">Add to Cart</button>
+                                            <button type="button" className="btn btn-md btn-warning w-25" onClick={ addToCart }>Add to Cart</button>
                                         </div>
                                     </div>
                                 </div>

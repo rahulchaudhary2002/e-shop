@@ -38,7 +38,7 @@ const Header = () => {
         <>
             <header className="header">
                 <div className="header-top">
-                    <div className="container d-flex justify-content-between align-items-center">
+                    <div className="container d-flex justify-content-between align-items-center flex-wrap">
                         <div></div>
                         <div className="header-top-quick-link">
                             {Object.keys(selector.user).length === 0 ?
@@ -60,15 +60,15 @@ const Header = () => {
                     </div>
                 </div>
                 <div className="header-main">
-                    <div className="container d-flex justify-content-between align-items-center gap-3">
+                    <div className="container d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div className="header-main-logo">
                             <Link to="/" title="Logo" className='text-dark text-decoration-none'><img src="/logo.png" alt="Logo" /></Link>
                         </div>
-                        <form className='d-flex align-items-center' action="/" onSubmit={handleSearch}>
-                            <input type="text" placeholder="What do you need?" name='search' onChange={(e) => setSearch(e.target.value)} />
-                            <button className="btn btn-primary"><div className="fa fa-search"></div></button>
+                        <form className='d-flex align-items-center w-50' action="/" onSubmit={handleSearch}>
+                            <input className='w-75' type="text" placeholder="What do you need?" name='search' onChange={(e) => setSearch(e.target.value)} />
+                            <button className="btn btn-primary"><i className="fa fa-search"></i></button>
                         </form>
-                        <Link to="#" title="Shopping Cart" className="text-dark text-decoration-none header-main-cart position-relative"><i className="fa fa-shopping-bag"></i> <span className="position-absolute top-0 start-100 translate-middle p-1 bg-primary border border-light rounded-circle"></span></Link>
+                        <Link to={'/cart'} title="Shopping Cart" className="text-dark text-decoration-none header-main-cart position-relative"><i className="fa fa-shopping-bag"></i> <span className="position-absolute top-0 start-100 translate-middle p-1 bg-primary border border-light rounded-circle"></span></Link>
                     </div>
                 </div>
             </header>

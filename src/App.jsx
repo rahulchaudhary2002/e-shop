@@ -30,6 +30,7 @@ import UserResetPassword from './website/pages/auth/ResetPassword';
 import UserChangePassword from './website/pages/auth/ChangePassword';
 import CategoryProduct from './website/pages/CategoryProduct';
 import Search from './website/pages/Search';
+import Cart from './website/pages/Cart';
 
 function App() {
     const dispatch = useDispatch()
@@ -59,6 +60,7 @@ function App() {
                     <Route path='/product/:id' element={<ProductDetail />} />
                     <Route path='/category/:id' element={<CategoryProduct />} />
                     <Route path='/product' element={<Search />} />
+                    <Route path='/cart' element={<Cart />} />
                 </Route>
 
                 <Route path='/administrator/*'>

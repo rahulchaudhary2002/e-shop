@@ -1,10 +1,31 @@
 import React from 'react'
 import { API_URL } from '../../constants'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import jsCookie from 'js-cookie'
+import { useDispatch, useSelector } from 'react-redux'
+import { createCart } from '../../api/CartApi'
+import { setCarts } from '../../features/cartSlice'
+import { toast } from 'react-toastify'
 
 const ProductCard = ({ product }) => {
-    const addToCart = async (id) => {
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
+    const selector = useSelector(state => state.cart)
 
+    const addToCart = async (product) => {
+        if (!jsCookie.get('accessToken'))
+            return navigate('/login')
+
+        createCart(product)
+            .then(res => {
+                if (res.status == 200) {
+                    dispatch(setCarts([...selector.carts, res.data.cart]))
+                    toast.success(res.message)
+                }
+                else {
+                    toast.error(res.error)
+                }
+            })
     }
 
     return (
@@ -16,7 +37,7 @@ const ProductCard = ({ product }) => {
                     <p className="card-text h4"><small className="text-primary">Rs. {product.price}</small></p>
                 </div>
             </Link>
-            <button type="buttton" className='btn btn-primary w-100' style={{ 'borderRadius': '0px 0px 5px 5px' }} onClick={() => {addToCart(product._id)}}>Add to cart</button>
+            <button type="buttton" className='btn btn-primary w-100' style={{ 'borderRadius': '0px 0px 5px 5px' }} onClick={() => { addToCart(product._id) }}>Add to cart</button>
         </div>
     )
 }
