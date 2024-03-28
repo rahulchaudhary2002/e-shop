@@ -7,6 +7,7 @@ import { getCarts, removeCart, updateCart } from '../../api/CartApi'
 import { setCarts } from '../../features/cartSlice'
 import { API_URL } from '../../constants'
 import { toast } from 'react-toastify'
+import { createOrder } from '../../api/OrderApi'
 
 const Cart = () => {
     const navigate = useNavigate()
@@ -14,8 +15,8 @@ const Cart = () => {
     const selector = useSelector(state => state.cart)
     const authSelector = useSelector(state => state.auth)
     const [loading, setLoading] = useState(true)
-    const shippingFee = 85
-    const discount = 50
+    const [state, setState] = useState({ province: '', district: '', municipality: '', street: '', shippingFee: 0, discount: 0, subTotal: 0, total: 0 })
+    const [errors, setErrors] = useState({ province: '', district: '', municipality: '', street: '' })
 
     useEffect(() => {
         if (!jsCookie.get('accessToken'))
@@ -31,7 +32,7 @@ const Cart = () => {
                 })
     }, [authSelector.user])
 
-    const handleChange = (id, e) => {
+    const handleCartChange = (id, e) => {
         if (e.target.value > 0) {
             const updatedCarts = selector.carts.map(cart =>
                 cart._id === id ? { ...cart, number_of_product: e.target.value } : cart
@@ -106,18 +107,49 @@ const Cart = () => {
     }
 
     const calculateSubTotal = () => {
-        let value = 0
-        if(selector.carts.length > 0) {
-            selector.carts.map((cart, index) => {
-                var price = parseInt(cart.product.price) * parseInt(cart.number_of_product)
-                value += price
-            })
-        }
-        return value
-    }
+        let value = 0;
+        let shippingFee = 0
+
+        selector.carts.length > 0 && selector.carts.forEach(cart => {
+            const price = parseInt(cart.product.price) * parseInt(cart.number_of_product);
+            shippingFee += 50;
+            value += price;
+        });
+
+        setState(prevState => ({ ...prevState, shippingFee, subTotal: value }));
+    };
 
     const calculateTotal = () => {
-        return calculateSubTotal() + shippingFee - discount
+        setState(prevState => {
+            const value = prevState.subTotal + prevState.shippingFee - prevState.discount;
+            return { ...prevState, total: value };
+        });
+    };
+
+    useEffect(() => {
+        calculateSubTotal();
+        calculateTotal()
+    }, [selector.carts]);
+
+    const handleChange = (e) => {
+        setState({ ...state, [e.target.name]: e.target.value });
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        setLoading(true)
+
+        const res = await createOrder(state, selector.carts, setErrors)
+
+        if (res.status === 200) {
+            dispatch(setCarts([]))
+            toast.success(res.message)
+        }
+        else if (res.status) {
+            toast.error(res.error)
+        }
+
+        setLoading(false)
     }
 
     if (loading)
@@ -142,7 +174,7 @@ const Cart = () => {
                                         </div>
                                         <div className="d-flex">
                                             <button className="btn btn-secondary" type="button" onClick={() => decrement(cart._id, cart.number_of_product)}><span className="fa fa-minus"></span></button>
-                                            <input type="text" className="form-control text-center" value={cart.number_of_product} onChange={(e) => handleChange(cart._id, e)} onBlur={(e) => handleBlur(cart._id, e)} />
+                                            <input type="text" className="form-control text-center" value={cart.number_of_product} onChange={(e) => handleCartChange(cart._id, e)} onBlur={(e) => handleBlur(cart._id, e)} />
                                             <button className="btn btn-secondary" type="button" onClick={() => increment(cart._id, cart.number_of_product)}><span className="fa fa-plus"></span></button>
                                         </div>
                                         <button type="button" className="btn btn-danger" onClick={() => remove(cart._id)}><i className="fa fa-trash"></i></button>
@@ -156,7 +188,7 @@ const Cart = () => {
                     </div>
                 </div>
                 {selector.carts.length > 0 &&
-                    <form action='/' className="row mt-3">
+                    <form action='/' className="row mt-3" onSubmit={handleSubmit}>
                         <div className="col-md-6">
                             <div className="card">
                                 <h5 className="card-header bg-white">Shipping Address</h5>
@@ -165,25 +197,29 @@ const Cart = () => {
                                         <div className="col-md-12">
                                             <div className="form-group">
                                                 <label htmlFor="province">Province</label>
-                                                <input className='form-control' type="text" name='province' id='province' />
+                                                <input className='form-control' type="text" name='province' id='province' onChange={handleChange} value={state.province} />
+                                                <span className="text-danger">{errors.province}</span>
                                             </div>
                                         </div>
                                         <div className="col-md-12">
                                             <div className="form-group">
                                                 <label htmlFor="district">District</label>
-                                                <input className='form-control' type="text" name='district' id='district' />
+                                                <input className='form-control' type="text" name='district' id='district' onChange={handleChange} value={state.district} />
+                                                <span className="text-danger">{errors.district}</span>
                                             </div>
                                         </div>
                                         <div className="col-md-12">
                                             <div className="form-group">
                                                 <label htmlFor="municipality">Municipality</label>
-                                                <input className='form-control' type="text" name='municipality' id='municipality' />
+                                                <input className='form-control' type="text" name='municipality' id='municipality' onChange={handleChange} value={state.municipality} />
+                                                <span className="text-danger">{errors.municipality}</span>
                                             </div>
                                         </div>
                                         <div className="col-md-12">
                                             <div className="form-group">
                                                 <label htmlFor="street">Street</label>
-                                                <input className='form-control' type="text" name='street' id='street' />
+                                                <input className='form-control' type="text" name='street' id='street' onChange={handleChange} value={state.street} />
+                                                <span className="text-danger">{errors.street}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -196,19 +232,19 @@ const Cart = () => {
                                 <div className="card-body d-flex flex-column gap-4">
                                     <div className="d-flex justify-content-between">
                                         <span>Subtotal</span>
-                                        <span>Rs {calculateSubTotal()}</span>
+                                        <span>Rs {state.subTotal}</span>
                                     </div>
                                     <div className="d-flex justify-content-between">
                                         <span>Shipping Fee</span>
-                                        <span>Rs {shippingFee}</span>
+                                        <span>Rs {state.shippingFee}</span>
                                     </div>
                                     <div className="d-flex justify-content-between">
                                         <span>Discount</span>
-                                        <span>Rs {discount}</span>
+                                        <span>Rs {state.discount}</span>
                                     </div>
                                     <div className="d-flex justify-content-between">
                                         <span>Total</span>
-                                        <span className='text-primary'>Rs {calculateTotal()}</span>
+                                        <span className='text-primary'>Rs {state.total}</span>
                                     </div>
                                     <button className='btn btn-primary w-100'>Proceed To Checkout</button>
                                 </div>

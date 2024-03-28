@@ -8,6 +8,7 @@ import UserRoute from './routes/UserRoute.js'
 import CategoryRoute from './routes/CategoryRoute.js'
 import ProductRoute from './routes/ProductRoute.js'
 import CartRoute from './routes/CartRoute.js'
+import OrderRoute from './routes/OrderRoute.js'
 
 const app = express()
 const port = process.env.PORT || 5000
@@ -22,6 +23,7 @@ app.use('/api', UserRoute)
 app.use('/api', CategoryRoute)
 app.use('/api', ProductRoute)
 app.use('/api', CartRoute)
+app.use('/api', OrderRoute)
 
 app.listen(port, ()=>{
     console.log(`server started successful at code ${port}`)

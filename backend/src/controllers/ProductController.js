@@ -28,7 +28,8 @@ const createProduct = async (req, res) => {
         category: req.body.category,
         price: req.body.price,
         image: req.file?.path,
-        description: req.body.description
+        description: req.body.description,
+        vendor: req.user._id
     })
 
     if (!product) {

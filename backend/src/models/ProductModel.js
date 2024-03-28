@@ -26,7 +26,12 @@ const productSchema = new Schema({
     },
     description: {
         type: String,
-    }
+    },
+    vendor: {
+        type: ObjectId,
+        ref: 'User',
+        required: true
+    },
 }, { timestamps: true })
 
 export default model("Product", productSchema)
