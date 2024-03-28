@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { refreshToken, register } from '../../../api/AuthApi';
 import Loading from '../../../common/components/Loading';
 import { storeAccessToken } from '../../../constants';
 import jsCookie from 'js-cookie';
 import { toast } from 'react-toastify';
+import { setCurrentUser } from '../../../features/authSlice';
+import { useDispatch } from 'react-redux';
 
 export default function Register(props) {
+    const dispatch = useDispatch()
     const navigate = useNavigate();
+    const location = useLocation()
     const [state, setState] = useState({ name: '', email: '', password: '', confirm_password: '' });
     const [errors, setErrors] = useState({ name: '', email: '', password: '', confirm_password: '' });
     const [loading, setLoading] = useState(true)
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = await register({...state, role: 'customer'}, setErrors)
+        const data = await register({ ...state, role: 'customer' }, setErrors)
 
         if (data.status === 200) {
             toast.success(data.message)
@@ -28,7 +32,7 @@ export default function Register(props) {
     const handleChange = (e) => {
         setState({ ...state, [e.target.name]: e.target.value });
     }
-    
+
     useEffect(() => {
         if (jsCookie.get('accessToken')) {
             navigate(-1)
@@ -37,11 +41,15 @@ export default function Register(props) {
             refreshToken()
                 .then(res => {
                     if (res.status == 200) {
+                        dispatch(setCurrentUser(res.data.loggedInUser))
                         storeAccessToken(res.data.accessToken)
                         toast.success(res.message)
-                        navigate('/administrator')
+                        
+                        if (location.pathname === "/administrator/register")
+                            navigate('/administrator')
+                        navigate(-1)
                     }
-                    else if(res.status) {
+                    else if (res.status) {
                         toast.error(res.error)
                         setLoading(false);
                     }

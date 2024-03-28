@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { login, refreshToken } from '../../../api/AuthApi';
 import Loading from '../../../common/components/Loading';
 import { storeAccessToken, storeRefreshToken } from '../../../constants';
@@ -11,6 +11,7 @@ import { setCurrentUser } from '../../../features/authSlice';
 export default function Login(props) {
     const navigate = useNavigate();
     const dispatch = useDispatch()
+    const location = useLocation()
     const [state, setState] = useState({ email: '', password: '' });
     const [errors, setErrors] = useState({ email: '', password: '' });
     const [loading, setLoading] = useState(true)
@@ -47,11 +48,15 @@ export default function Login(props) {
             refreshToken()
                 .then(res => {
                     if (res.status == 200) {
+                        dispatch(setCurrentUser(res.data.loggedInUser))
                         storeAccessToken(res.data.accessToken)
                         toast.success(res.message)
+
+                        if (location.pathname === "/login")
+                            navigate('/')
                         navigate(-1)
                     }
-                    else if(res.status) {
+                    else if (res.status) {
                         toast.error(res.error)
                         setLoading(false);
                     }

@@ -20,7 +20,7 @@ const verifyJWT = async(req, res, next) => {
         req.user = user;
         return next()
     } catch (error) {
-        return res.status(401).json({status: 401, error: error?.message || "Invalid access token"})
+        return res.status(401).json({status: 401, error: "Invalid access token"})
     }   
 }
 
@@ -33,7 +33,7 @@ export const hasRole = (roles) => {
             
             return res.status(403).json({status: 403, error: "Unauthorized request"})
         } catch (error) {
-            return res.status(401).json({status: 401, error: error?.message || "Invalid access token"})
+            return res.status(401).json({status: 401, error: "Invalid access token"})
         }   
     }
 }

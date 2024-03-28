@@ -197,13 +197,14 @@ const refreshAccessToken = async (req, res) => {
         }
 
         const accessToken = user.generateAccessToken()
+        const loggedInUser = await User.findById(decodedToken?._id).select('-password -refreshToken');
 
         return res
             .status(200)
             .cookie("accessToken", accessToken, accessOptions)
             .json({
                 status: 200,
-                data: { accessToken },
+                data: { accessToken, loggedInUser },
                 message: "Access token refreshed"
             })
     } catch (error) {
