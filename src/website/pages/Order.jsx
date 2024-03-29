@@ -70,6 +70,7 @@ const Order = () => {
                                         <th>SN</th>
                                         <th>Product Name</th>
                                         <th>Quantity</th>
+                                        <th>Price</th>
                                         <th>Address</th>
                                         <th>Product Image</th>
                                         <th>Status</th>
@@ -82,6 +83,7 @@ const Order = () => {
                                             <td>{index + 1}</td>
                                             <td><Link className="text-decoration-none" to={`/product/${order.product._id}`}>{order.product.name}</Link></td>
                                             <td>{order.quantity}</td>
+                                            <td>{order.price}</td>
                                             <td>{order.address}</td>
                                             <td><img src={`${API_URL}/${order.product.image}`} alt={order.product.name} height={50} width={50} /></td>
                                             <td>

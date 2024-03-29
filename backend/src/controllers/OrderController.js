@@ -33,6 +33,7 @@ const createOrder = async (req, res) => {
                 user: req.user._id,
                 product: cart.product._id,
                 quantity: cart.quantity,
+                price: cart.quantity * cart.product.price + 50,
                 address: `${req.body.province}, ${req.body.district}, ${req.body.municipality}, ${req.body.street}`
             });
             await Cart.findByIdAndDelete(cart._id);

@@ -27,6 +27,7 @@ const Order = () => {
                                     <th>Customer Name</th>
                                     <th>Product Name</th>
                                     <th>Quantity</th>
+                                    <th>Price</th>
                                     <th>Address</th>
                                     <th>Product Image</th>
                                     <th>Status</th>
@@ -40,6 +41,7 @@ const Order = () => {
                                         <td>{order.user.name}</td>
                                         <td>{order.product.name}</td>
                                         <td>{order.quantity}</td>
+                                        <td>{order.price}</td>
                                         <td>{order.address}</td>
                                         <td><img src={`${API_URL}/${order.product.image}`} alt={order.product.name} height={50} width={50} /></td>
                                         <td>
@@ -54,7 +56,7 @@ const Order = () => {
                                     </tr>
                                 )) :
                                     <tr>
-                                        <td colSpan={8}>No data found</td>
+                                        <td colSpan={9}>No data found</td>
                                     </tr>
                                 }
                             </tbody>
