@@ -2,8 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { changePassword } from '../../../api/AuthApi';
 import Loading from '../../../common/components/Loading';
 import { toast } from 'react-toastify';
+import jsCookie from 'js-cookie'
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const ChangePassword = (props) => {
+    const navigate = useNavigate()
+    const authUser = useSelector(state => state.auth)
     const [loading, setLoading] = useState(true)
     const [state, setState] = useState({ old_password: '', new_password: '', confirm_password: '' });
     const [errors, setErrors] = useState({ old_password: '', new_password: '', confirm_password: '' });
@@ -30,6 +35,12 @@ const ChangePassword = (props) => {
     }
 
     useEffect(() => {
+        setLoading(true);
+
+        if (!jsCookie.get('accessToken') || authUser.user.role === 'customer') {
+            return navigate('/administrator/login');
+        }
+  
         setLoading(false);
     }, [])
 

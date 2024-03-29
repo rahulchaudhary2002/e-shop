@@ -31,6 +31,9 @@ import UserChangePassword from './website/pages/auth/ChangePassword';
 import CategoryProduct from './website/pages/CategoryProduct';
 import Search from './website/pages/Search';
 import Cart from './website/pages/Cart';
+import OrderLayout from './administrator/pages/order/OrderLayout';
+import Order from './administrator/pages/order/Order';
+import TrackOrder from './website/pages/Order';
 
 function App() {
     const dispatch = useDispatch()
@@ -61,6 +64,7 @@ function App() {
                     <Route path='/category/:id' element={<CategoryProduct />} />
                     <Route path='/product' element={<Search />} />
                     <Route path='/cart' element={<Cart />} />
+                    <Route path='/order' element={<TrackOrder />} />
                 </Route>
 
                 <Route path='/administrator/*'>
@@ -80,6 +84,9 @@ function App() {
                         </Route>
                         <Route path="product" element={<ProductLayout />} >
                             <Route path="" element={<Product />} />
+                        </Route>
+                        <Route path="order" element={<OrderLayout />} >
+                            <Route path="" element={<Order />} />
                         </Route>
                     </Route>
                 </Route>

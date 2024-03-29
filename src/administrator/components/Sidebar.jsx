@@ -35,6 +35,11 @@ const Sidebar = () => {
                         <i className="fa fa-product-hunt"></i> Product
                     </Link>
                 </li>
+                <li>
+                    <Link to="/administrator/order" className={`nav-link text-white d-flex align-items-center gap-3 ${location.pathname==="/administrator/order" ? "active" : ""}`}>
+                        <i className="fa fa-truck-fast"></i> Order
+                    </Link>
+                </li>
             </ul>
         </div>
     )

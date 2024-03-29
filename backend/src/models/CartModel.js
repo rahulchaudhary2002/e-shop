@@ -13,7 +13,7 @@ const cardSchema = new Schema({
         ref: 'Product',
         required: true
     },
-    number_of_product: {
+    quantity: {
         type: Number,
         required: true,
         min: 1

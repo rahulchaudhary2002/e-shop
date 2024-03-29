@@ -23,6 +23,7 @@ const Header = () => {
             jsCookie.remove('refreshToken')
             dispatch(setCurrentUser({}))
             toast.success(res.message)
+            navigate('/')
         }
         else {
             toast.error(res.error)
@@ -51,6 +52,7 @@ const Header = () => {
                                         <Link className="nav-link dropdown-toggle" to="/" role="button" data-bs-toggle="dropdown" aria-expanded="false"><span className="ml-3">{selector.user?.name}</span>
                                         </Link>
                                         <div className="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDarkDropdownMenuLink">
+                                            <Link className="dropdown-item" to="/order">Track Your Order</Link>
                                             <Link className="dropdown-item" to="/change-password">Change Password</Link>
                                             <Link className="dropdown-item" to="/logout" onClick={handleLogout}>Logout</Link>
                                         </div>

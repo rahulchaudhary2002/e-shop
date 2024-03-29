@@ -67,6 +67,22 @@ const ProductDetail = () => {
             })
     }
 
+    const buyNow = async () => {
+        if (!jsCookie.get('accessToken'))
+            return navigate('/login')
+
+        createCart(selector.product._id, quantity)
+            .then(res => {
+                if (res.status == 200) {
+                    dispatch(setCarts([...cartSelector.carts, res.data.cart]))
+                    return navigate('/cart')
+                }
+                else {
+                    toast.error(res.error)
+                }
+            })
+    }
+
     if (loading)
         return <Loading />
     else
@@ -94,7 +110,7 @@ const ProductDetail = () => {
                                             <button className="btn btn-secondary w-25" type="button" onClick={increment}><span className="fa fa-plus"></span></button>
                                         </div>
                                         <div className="mt-4 d-flex gap-2">
-                                            <button type="button" className="btn btn-md btn-primary buy-now w-25">Buy Now</button>
+                                            <button type="button" className="btn btn-md btn-primary buy-now w-25" onClick={ buyNow }>Buy Now</button>
                                             <button type="button" className="btn btn-md btn-warning w-25" onClick={ addToCart }>Add to Cart</button>
                                         </div>
                                     </div>

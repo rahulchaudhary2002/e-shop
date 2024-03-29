@@ -35,7 +35,7 @@ const Cart = () => {
     const handleCartChange = (id, e) => {
         if (e.target.value > 0) {
             const updatedCarts = selector.carts.map(cart =>
-                cart._id === id ? { ...cart, number_of_product: e.target.value } : cart
+                cart._id === id ? { ...cart, quantity: e.target.value } : cart
             );
             dispatch(setCarts(updatedCarts))
         }
@@ -57,8 +57,8 @@ const Cart = () => {
                 })
     };
 
-    const increment = (id, number_of_product) => {
-        updateCart(id, number_of_product + 1)
+    const increment = (id, quantity) => {
+        updateCart(id, quantity + 1)
             .then(res => {
                 if (res.status === 200) {
                     const updatedCarts = selector.carts.map(cart =>
@@ -73,9 +73,9 @@ const Cart = () => {
             })
     }
 
-    const decrement = (id, number_of_product) => {
-        if (number_of_product - 1 > 0) {
-            updateCart(id, number_of_product - 1)
+    const decrement = (id, quantity) => {
+        if (quantity - 1 > 0) {
+            updateCart(id, quantity - 1)
                 .then(res => {
                     if (res.status === 200) {
                         const updatedCarts = selector.carts.map(cart =>
@@ -111,7 +111,7 @@ const Cart = () => {
         let shippingFee = 0
 
         selector.carts.length > 0 && selector.carts.forEach(cart => {
-            const price = parseInt(cart.product.price) * parseInt(cart.number_of_product);
+            const price = parseInt(cart.product.price) * parseInt(cart.quantity);
             shippingFee += 50;
             value += price;
         });
@@ -173,9 +173,9 @@ const Cart = () => {
                                             <small className="text-gray"><del>Rs. 4000</del></small> <small>-50%</small>
                                         </div>
                                         <div className="d-flex">
-                                            <button className="btn btn-secondary" type="button" onClick={() => decrement(cart._id, cart.number_of_product)}><span className="fa fa-minus"></span></button>
-                                            <input type="text" className="form-control text-center" value={cart.number_of_product} onChange={(e) => handleCartChange(cart._id, e)} onBlur={(e) => handleBlur(cart._id, e)} />
-                                            <button className="btn btn-secondary" type="button" onClick={() => increment(cart._id, cart.number_of_product)}><span className="fa fa-plus"></span></button>
+                                            <button className="btn btn-secondary" type="button" onClick={() => decrement(cart._id, cart.quantity)}><span className="fa fa-minus"></span></button>
+                                            <input type="text" className="form-control text-center" value={cart.quantity} onChange={(e) => handleCartChange(cart._id, e)} onBlur={(e) => handleBlur(cart._id, e)} />
+                                            <button className="btn btn-secondary" type="button" onClick={() => increment(cart._id, cart.quantity)}><span className="fa fa-plus"></span></button>
                                         </div>
                                         <button type="button" className="btn btn-danger" onClick={() => remove(cart._id)}><i className="fa fa-trash"></i></button>
                                     </div>

@@ -13,7 +13,7 @@ const getCarts = async () => {
     return await response.json()
 }
 
-const createCart = async (product, number_of_product = 1) => {
+const createCart = async (product, quantity = 1) => {
     try {
         const response = await fetch(`${API_URL}/api/create-cart`, {
             method: 'POST',
@@ -21,7 +21,7 @@ const createCart = async (product, number_of_product = 1) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${jsCookie.get('accessToken')}`
             },
-            body: JSON.stringify({ product, number_of_product })
+            body: JSON.stringify({ product, quantity })
         });
 
         return await response.json();
@@ -31,7 +31,7 @@ const createCart = async (product, number_of_product = 1) => {
     }
 }
 
-const updateCart = async (id, number_of_product = 1) => {
+const updateCart = async (id, quantity = 1) => {
     try {
         const response = await fetch(`${API_URL}/api/update-cart/${id}`, {
             method: 'PUT',
@@ -39,7 +39,7 @@ const updateCart = async (id, number_of_product = 1) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${jsCookie.get('accessToken')}`
             },
-            body: JSON.stringify({ number_of_product })
+            body: JSON.stringify({ quantity })
         });
 
         return await response.json();

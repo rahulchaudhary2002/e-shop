@@ -14,14 +14,14 @@ const createCart = async (req, res) => {
         let cart = await Cart.findOne({ user: req.user._id, product: req.body.product })
 
         if (cart) {
-            cart.number_of_product = parseInt(cart.number_of_product) + parseInt(req.body.number_of_product)
+            cart.quantity = parseInt(cart.quantity) + parseInt(req.body.quantity)
             await cart.save()
         }
         else {
             cart = await Cart.create({
                 user: req.user._id,
                 product: req.body.product,
-                number_of_product: req.body.number_of_product
+                quantity: req.body.quantity
             })
         }
 
@@ -41,7 +41,7 @@ const createCart = async (req, res) => {
 const updateCart = async (req, res) => {
     try {
         let cart = await Cart.findById(req.params.id)
-        cart.number_of_product = req.body.number_of_product
+        cart.quantity = req.body.quantity
         await cart.save()
 
         const updatedcart = await Cart.findById(req.params.id).populate('user').populate('product')
